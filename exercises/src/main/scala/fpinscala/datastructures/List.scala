@@ -37,6 +37,13 @@ object List { // `List` companion object. Contains functions for creating and wo
       case Cons(h,t) => Cons(h, append(t, a2))
     }
 
+  def appendFold[A](a1: List[A], a2: List[A]): List[A] = foldRight(a1,a2)((a,b)=>Cons(a,b))
+
+  def appendLists[A](l: List[List[A]]): List[A] = {
+    val r: List[A]=Nil
+    foldRight(l,r)((a,b)=>List.append(a,b))
+  }
+
   def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B = // Utility functions
     as match {
       case Nil => z
@@ -44,10 +51,10 @@ object List { // `List` companion object. Contains functions for creating and wo
     }
 
   def sum2(ns: List[Int]) =
-    foldRight(ns, 0)((x,y) => x + y)
+    foldLeft(ns, 0)((x,y) => x + y)
 
   def product2(ns: List[Double]) =
-    foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
+    foldLeft(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
 
   def tail[A](l: List[A]): List[A] = l match {
@@ -55,7 +62,7 @@ object List { // `List` companion object. Contains functions for creating and wo
     case Cons(_ , x) => x
   }
 
-  def setHead[A](l: List[A], h: A): List[A] = sys.error("todo")
+  def setHead[A](l: List[A], h: A): List[A] = Cons(h,tail(l));
 
   def drop[A](l: List[A], n: Int): List[A] = n match {
     case _ if (n<1) => l
@@ -68,11 +75,28 @@ object List { // `List` companion object. Contains functions for creating and wo
     case _ => l
   }
 
-  def init[A](l: List[A]): List[A] = sys.error("todo")
+  def init[A](l: List[A]): List[A] = {
+    def appendUntilOne(l1:List[A],l2:List[A]) :List[A]= l2 match {
+      case Nil => Nil
+      case Cons(x,Nil)=>l1
+      case Cons(x,y)=>appendUntilOne(List.append(l1,List(x)),List.tail(l2))
+    }
 
-  def length[A](l: List[A]): Int = sys.error("todo")
+    appendUntilOne(Nil,l)
+  }
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = sys.error("todo")
+  def length[A](l: List[A]): Int = foldLeft(l,0)((x,y)=>(x + 1))
+
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = l match {
+    case Nil => z
+    case Cons(x,Nil)=> f(z,x)
+    case Cons(x,y) => f(foldLeft(y,z)(f),x)
+  }
 
   def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
+
+  def reverse[A](l: List[A]) = {
+    val r:List[A]=Nil
+    foldLeft(l,r)((a,b)=>List.append(a,List(b)))
+  }
 }
