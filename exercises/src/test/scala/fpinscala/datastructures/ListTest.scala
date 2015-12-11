@@ -92,5 +92,50 @@ class ListTest  extends org.scalatest.FlatSpec {
 
   }
 
+  "Function map" should "map f on all elements" in {
+    List.map(Nil)(_.toString) shouldBe Nil;
+    List.map(List(4))(_.toString) shouldBe List("4")
+    List.map(List(4,5,6))(_.toString) shouldBe List("4","5","6")
+
+    List.map(List(4,5,6))(_ + 1) shouldBe List(5,6,7)
+
+    List.map(List(4,5,6))(_ * 2) shouldBe List(8,10,12)
+
+  }
+
+  "Function filter" should "filter items from List" in {
+    List.filter(List(4,5,6,7,8,9))((a)=>(a % 2) == 0) shouldBe List(4,6,8)
+  }
+
+  "Function flatMap" should "amp fnction returning List on all elements" in {
+    List.flatMap(List(4,5,6))(i => List(i,i)) shouldBe List(4,4,5,5,6,6)
+  }
+
+  "Function filterFM" should "filter items from List using FlatMap" in {
+    List.filterFM(List(4,5,6,7,8,9))((a)=>(a % 2) == 0) shouldBe List(4,6,8)
+  }
+
+  "Function addList" should "merge two lists with given function" in {
+    List.addLists(List(1,2,3),List(4,5,6))(_+_) shouldBe List(5,7,9)
+    List.addLists(List(1,2,3),List(4,5))(_+_) shouldBe List(5,7,3)
+    List.addLists(List(1,2),List(4,5,6))(_+_) shouldBe List(5,7,6)
+    List.addLists(List(1,2,3),Nil)(_+_) shouldBe List(1,2,3)
+    List.addLists(Nil,List(4,5,6))(_+_) shouldBe List(4,5,6)
+  }
+
+  "Function hasSubsequece" should "return true if one list is subsequnce of another" in {
+    List.hasSubsequence(List(1,2,3),List(4,5,6)) shouldBe false
+    List.hasSubsequence(List(1,2,3),List(1,2)) shouldBe true
+    List.hasSubsequence(List(1,2,3),List(1,2,3)) shouldBe true
+    List.hasSubsequence(List(1,2,3,4,5),List(2,3)) shouldBe true
+    List.hasSubsequence(List(1,2,3,4),List(3,4)) shouldBe true
+    List.hasSubsequence(List(1,2,3),Nil) shouldBe false
+
+    List.hasSubsequence(List(1,2,3),List(2,3,4)) shouldBe false
+    List.hasSubsequence(List(1,2,3),List(1,2,3,4)) shouldBe false
+
+    List.hasSubsequence(List(1,1,1,2,3,4,5),List(1,2,3)) shouldBe true
+
+  }
 
   }

@@ -93,10 +93,43 @@ object List { // `List` companion object. Contains functions for creating and wo
     case Cons(x,y) => f(foldLeft(y,z)(f),x)
   }
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
+  def map[A,B](l: List[A])(f: A => B): List[B] = l match  {
+    case Nil => Nil
+    case Cons(a,Nil)=>Cons(f(a),Nil)
+    case Cons(a,b) => Cons(f(a),List.map(b)(f))
+  }
 
   def reverse[A](l: List[A]) = {
     val r:List[A]=Nil
     foldLeft(l,r)((a,b)=>List.append(a,List(b)))
+  }
+
+  def filter[A](l: List[A])(f : A => Boolean):List[A] = l match {
+    case Nil => Nil
+    case Cons(a,b) if (f(a))=> Cons(a,List.filter(b)(f))
+    case Cons(a,b) => List.filter(b)(f)
+  }
+
+  def filterFM[A](l: List[A])(f : A => Boolean):List[A] = flatMap(l)((a)=>if(f(a)) List(a) else Nil)
+
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] = l match  {
+    case Nil => Nil
+    case Cons(a,b) => List.append(f(a),(List.flatMap(b)(f)))
+  }
+
+  def addLists[A](l1:List[A],l2:List[A])(f: (A,A)=>A):List[A]=(l1,l2) match {
+    case (Nil,Nil) => Nil
+    case(Cons(a,b),Nil) => Cons(a,addLists(b,Nil)(f))
+    case(Nil,Cons(a,b)) => Cons(a,addLists(b,Nil)(f))
+    case(Cons(a,b),Cons(c,d)) => Cons(f(a,c),addLists(b,d)(f))
+  }
+
+  def hasSubsequence[A](l:List[A],s:List[A]):Boolean = (l,s) match {
+    case (Nil,Nil) => false
+    case (_,Nil) => false
+    case (Nil,_) =>false
+    case (Cons(a,b),(Cons(c,Nil))) if(a==c) => true
+    case(Cons(a,b),(Cons(c,d))) if(a==c) => hasSubsequence(b,d) || hasSubsequence(b,s)
+    case(Cons(a,b),(Cons(c,d))) => hasSubsequence(b,s)
   }
 }
